@@ -11,9 +11,7 @@ def vv(x, p, param):
     p += 0.5 * (f1 + f2) * dt 
     return x, p, f2
 
-def vvl(x, p, param, f1 = "DO" ):
-    if f1=="DO":
-        f1 = param.force(x, param)
+def vvl(x, p, param, f1):
     ndof = param.ndof
     β  = param.β
     v = p/param.m
