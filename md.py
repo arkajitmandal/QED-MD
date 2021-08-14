@@ -35,3 +35,5 @@ def vvl(dat):
     return dat
 
 
+def C(x):
+    return 0 
