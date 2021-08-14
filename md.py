@@ -34,6 +34,3 @@ def vvl(dat):
     dat.f1 = f2
     return dat
 
-
-def C(x):
-    return 0 
