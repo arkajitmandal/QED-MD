@@ -44,19 +44,27 @@ def dV(R):
     N    = (R-1)//3
     dE = np.zeros((ndof))
     # Molecular Potential
-    Ω = 0.14/27.2114
+    Ω  = 0.14/27.2114
+    ωc = 0.07/27.2114
+    χ  = 0.1 * ωc
     m1 = 1836.0 #
     m2 = 19 *  1836.0
-    m = m1 * m2 / (m1 + m2)
+    m  = m1 * m2 / (m1 + m2)
+    Rd = np.zeros(M)
+    μ  = np.zeros(M)
     for i in range(M):
         # Coordinates
         R1x, R1y, R1z =   R[6*i], R[6*i+1], R[6*i+2]
         R2x, R2y, R2z = R[6*i+3], R[6*i+4], R[6*i+5]
         # Bond-Length
-        Rd = ((R1x-R2x)**2 + (R1y-R2y)**2 + (R1z-R2z)**2)**0.5
+        Rd[i] = ((R1x-R2x)**2 + (R1y-R2y)**2 + (R1z-R2z)**2)**0.5
         # Harmonic Potential 
-        dE[2*i]     =   m * (Ω**2) *  Rd
-        dE[2*i + 1] = - m * (Ω**2) *  Rd
-
+        dE[2*i]     =   m * (Ω**2) *  Rd[i]
+        dE[2*i + 1] = - m * (Ω**2) *  Rd[i]
+        # Dipole 
+        μ[i] = 
+        
+    # Cavity Radiation
+    dE[-1] = ωc * (R[-1] + χ * (2/ωc**3.0)**0.5 
 
 
