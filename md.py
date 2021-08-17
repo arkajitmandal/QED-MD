@@ -2,11 +2,21 @@ import numpy as np
 from numpy.random import normal as gran
 
 class parameters():
-   NSteps =   200 #int(2*10**6)
-   dtN    =   1.0
-   η      =   0.1
-   ωc     =   0.10/27.2114
-   Ω      =   0.14/27.2114
+    NSteps =   200 #int(2*10**6)
+    dtN    =   1.0
+    η      =   0.1
+    ωc     =   0.10/27.2114
+    Ω      =   0.14/27.2114
+    M      =   10
+    T = 298.0
+    β = 315774/T  
+    # masses
+    m      =   np.zeros(M+1)
+    m[::2] =    1836.0 # atom 1
+    m[1::2] =   1836.0 # atom 2
+    m[-1]   =   1.0    # cavity mode
+    # output
+    nskip  = 10
 
 class Bunch:
     def __init__(self, **kwds):
@@ -26,7 +36,7 @@ def vv(dat):
 def vvl(dat):
     ndof = dat.ndof
     β  = dat.β
-    v = dat.p/dat.m
+    v = dat.P/dat.m
     dt = dat.dt
     λ = dat.λ #/ dat.m
     σ = (2.0 * λ/(β * dat.m )) ** 0.5
@@ -35,13 +45,14 @@ def vvl(dat):
     c = 0.28867513459
     A = (0.5 * dt**2) * (dat.f1/dat.m - λ * v) + (σ * dt**(3.0/2.0)) * (0.5 * ξ + c * θ) 
     #---- X update -----------
-    dat.x += (v * dt + A) 
+    dat.R += (v * dt + A) 
     #-------------------------
-    f1 = dat.f1
-    f2 = dat.F(dat)
+    f1 =   dat.f1
+    f2 = - dat.dV(dat)
     #---- V update ----------- 
     v += ( 0.5 * dt * (f1+f2)/dat.m - dt * λ * v +  σ * (dt**0.5) * ξ - A * λ ) 
     #-------------------------
+    dat.P  = v * dat.m
     dat.f1 = f2
     return dat
 
@@ -59,8 +70,8 @@ def dV(dat):
     Ω  = dat.param.Ω # 0.14/27.2114
     ωc = dat.param.ωc
     χ  = dat.param.η * ωc
-    m1 = 1836.0 #
-    m2 = 1836.0
+    m1 = dat.param.m[0] #
+    m2 = dat.param.m[1]
     m  = m1 * m2 / (m1 + m2)
     Rd = np.zeros(M)
     μ  = np.zeros(M)
@@ -85,6 +96,29 @@ def dV(dat):
     dat.dE = dE
     return dat.dE
 
-def runTraj():
+def init(dat):
+    Ω  = dat.param.Ω 
+    M  = dat.param.M
+    m  = dat.param.m
+    R  = np.zeros((6*M+1)) 
+    P  = np.zeros((6*M+1)) 
+    β  = dat.param.β
     
+    # Initialize in Rd 
+    for i in range(M):
+        σR = (1/ (β * m * Ω**2.0) ) ** 0.5
+        Rd = gran(2.7023081637, σR)
+        # θ  = np.random.random() * np.pi 
+        # ϕ  = np.random.random() * 2.0 * np.pi 
+        R[6*i+2] = +Rd/2
+        R[6*i+5] = -Rd/2
+    dat.R = R
+    dat.P = P
+    return dat
+    
+
+
+
+
+
 
