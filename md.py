@@ -1,6 +1,13 @@
 import numpy as np
 from numpy.random import normal as gran
 
+class parameters():
+   NSteps =   200 #int(2*10**6)
+   dtN    =   1.0
+   η      =   0.1
+   ωc     =   0.10/27.2114
+   Ω      =   0.14/27.2114
+
 class Bunch:
     def __init__(self, **kwds):
         self.__dict__.update(kwds)
@@ -38,7 +45,8 @@ def vvl(dat):
     dat.f1 = f2
     return dat
 
-def dV(R):
+def dV(dat):
+    R = dat.R
     # Total DOF : 2(3.M) + 1 DOF 
     # M == Molecules 
     # Each dimer has 2 atoms 
@@ -48,11 +56,11 @@ def dV(R):
     N    = (R-1)//3
     dE = np.zeros((ndof))
     # Molecular Potential
-    Ω  = 0.14/27.2114
-    ωc = 0.07/27.2114
-    χ  = 0.1 * ωc
+    Ω  = dat.param.Ω # 0.14/27.2114
+    ωc = dat.param.ωc
+    χ  = dat.param.η * ωc
     m1 = 1836.0 #
-    m2 = 1 *  1836.0
+    m2 = 1836.0
     m  = m1 * m2 / (m1 + m2)
     Rd = np.zeros(M)
     μ  = np.zeros(M)
@@ -73,6 +81,10 @@ def dV(R):
         dE[2*i + 1] -= (ωc**2.0) * (R[-1] + χ * (2/ωc**3.0)**0.5 * np.sum(μ)) * χ * (2/ωc**3.0)**0.5 * μ0
     # Cavity Radiation
     dE[-1] = (ωc**2.0) * (R[-1] + χ * (2/ωc**3.0)**0.5 * np.sum(μ))
-    return dE
+    # return result
+    dat.dE = dE
+    return dat.dE
 
+def runTraj():
+    
 
