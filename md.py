@@ -34,3 +34,29 @@ def vvl(dat):
     dat.f1 = f2
     return dat
 
+def dV(R):
+    # Total DOF : 2(3.M) + 1 DOF 
+    # M == Molecules 
+    # Each dimer has 2 atoms 
+    # Each Atom has 3 dimension 
+    ndof = len(R)
+    M    = (R-1)//6
+    N    = (R-1)//3
+    dE = np.zeros((ndof))
+    # Molecular Potential
+    Ω = 0.14/27.2114
+    m1 = 1836.0 #
+    m2 = 19 *  1836.0
+    m = m1 * m2 / (m1 + m2)
+    for i in range(M):
+        # Coordinates
+        R1x, R1y, R1z =   R[6*i], R[6*i+1], R[6*i+2]
+        R2x, R2y, R2z = R[6*i+3], R[6*i+4], R[6*i+5]
+        # Bond-Length
+        Rd = ((R1x-R2x)**2 + (R1y-R2y)**2 + (R1z-R2z)**2)**0.5
+        # Harmonic Potential 
+        dE[2*i]     =   m * (Ω**2) *  Rd
+        dE[2*i + 1] = - m * (Ω**2) *  Rd
+
+
+
