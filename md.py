@@ -1,6 +1,10 @@
 import numpy as np
 from numpy.random import normal as gran
 
+class Bunch:
+    def __init__(self, **kwds):
+        self.__dict__.update(kwds)
+
 def vv(dat):
     f1 = dat.f1
     m = dat.m 
@@ -69,6 +73,6 @@ def dV(R):
         dE[2*i + 1] -= (ωc**2.0) * (R[-1] + χ * (2/ωc**3.0)**0.5 * np.sum(μ)) * χ * (2/ωc**3.0)**0.5 * μ0
     # Cavity Radiation
     dE[-1] = (ωc**2.0) * (R[-1] + χ * (2/ωc**3.0)**0.5 * np.sum(μ))
-
     return dE
+
 
