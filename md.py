@@ -48,7 +48,7 @@ def dV(R):
     ωc = 0.07/27.2114
     χ  = 0.1 * ωc
     m1 = 1836.0 #
-    m2 = 19 *  1836.0
+    m2 = 1 *  1836.0
     m  = m1 * m2 / (m1 + m2)
     Rd = np.zeros(M)
     μ  = np.zeros(M)
@@ -61,10 +61,14 @@ def dV(R):
         # Harmonic Potential 
         dE[2*i]     =   m * (Ω**2) *  Rd[i]
         dE[2*i + 1] = - m * (Ω**2) *  Rd[i]
-        # Dipole 
-        μ[i] = 
-        
+        # Dipole in the Z direction
+        μ0   =  0.8
+        μ[i] =  μ0 * (R1z-R2z)
+        # Cavity force on Molecule 
+        dE[2*i]     += (ωc**2.0) * (R[-1] + χ * (2/ωc**3.0)**0.5 * np.sum(μ)) * χ * (2/ωc**3.0)**0.5 * μ0
+        dE[2*i + 1] -= (ωc**2.0) * (R[-1] + χ * (2/ωc**3.0)**0.5 * np.sum(μ)) * χ * (2/ωc**3.0)**0.5 * μ0
     # Cavity Radiation
-    dE[-1] = ωc * (R[-1] + χ * (2/ωc**3.0)**0.5 
+    dE[-1] = (ωc**2.0) * (R[-1] + χ * (2/ωc**3.0)**0.5 * np.sum(μ))
 
+    return dE
 
