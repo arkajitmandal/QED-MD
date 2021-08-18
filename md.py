@@ -98,11 +98,12 @@ def dV(dat):
 
 
 
-"""
-Note this is not a equilibrium distribution
-and one need to do a equilibriation run
-"""
+
 def init(dat):
+    """
+    Note this is not a equilibrium distribution
+    and one need to do a equilibriation run
+    """
     Ω  = dat.param.Ω 
     M  = dat.param.M
     m  = dat.param.m
@@ -122,6 +123,20 @@ def init(dat):
     dat.P = P
     return dat
     
+
+def writeXYZ(filename,dat):
+    M = dat.param.M
+    R = dat.R[:-1] #np.reshape(dat.R[:-1],(M,3))
+    atom1 = "C"
+    atom2 = "O"
+    txt   = f"{M}\n\n"
+    for i in range(M):
+        txt +=  f"{atom1}\n" + "\t".join(R[6*i  :6*i+3].astype(str)) + "\n"
+        txt +=  f"{atom2}\n" + "\t".join(R[6*i+3:6*i+6].astype(str)) + "\n"
+    fob = open(filename,"a")
+    fob.write(txt)
+    fob.close()
+
 
 
 
