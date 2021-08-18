@@ -96,6 +96,12 @@ def dV(dat):
     dat.dE = dE
     return dat.dE
 
+
+
+"""
+Note this is not a equilibrium distribution
+and one need to do a equilibriation run
+"""
 def init(dat):
     Ω  = dat.param.Ω 
     M  = dat.param.M
