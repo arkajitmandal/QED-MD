@@ -1,10 +1,10 @@
 import numpy as np
 from numpy.random import normal as gran
-
+import os
 class parameters():
     eSteps =   10000 # equilibriation steps
     nSteps =   200 # int(2*10**6)
-    dtN    =   0.5
+    dtN    =   1.0
     η      =   0.0
     ωc     =   0.10/27.2114
     Ω      =   0.14/27.2114
@@ -22,8 +22,8 @@ class parameters():
     m[1::2]  =   1836.0 # atom 2
     m[-1]    =   1.0    # cavity mode
     # output
-    nskip    = 10
-    filename = "output.xyz"
+    nskip    = 50
+    filename = "output"
 
 class Bunch:
     def __init__(self, **kwds):
@@ -152,7 +152,7 @@ def init(dat):
     
 
 def writeXYZ(dat):
-    filename = dat.param.filename
+    filename = dat.param.filename + ".xyz"
     M = dat.param.M
     R = dat.R[:-1] # np.reshape(dat.R[:-1],(M,3))
     atom1 = "C"
@@ -166,7 +166,7 @@ def writeXYZ(dat):
     fob.close()
 
 def writeR(dat):
-    filename = dat.param.filename
+    filename = dat.param.filename + ".txt"
     R = dat.R
     fob = open(filename,"a")
     txt = "\t".join(R.astype(str)) + "\n"
@@ -174,7 +174,7 @@ def writeR(dat):
     fob.close()
 
 def writeSQ(dat):
-    filename = dat.param.filename
+    filename = dat.param.filename + ".xyz"
     M = dat.param.M
     R = dat.R[:-1] * 1# np.reshape(dat.R[:-1],(M,3))
     atom1 = "C"
@@ -199,9 +199,26 @@ def writeSQ(dat):
     fob.write(txt)
     fob.close()
 
+def writeθ(dat):
+    filename = dat.param.filename + ".theta"
+    R = dat.R
+    θ = np.zeros((dat.param.M))
+    for i in range(dat.param.M):
+        # Coordinates
+        R1x, R1y, R1z =   R[6*i], R[6*i+1], R[6*i+2]
+        R2x, R2y, R2z = R[6*i+3], R[6*i+4], R[6*i+5]
+        # Bond-Length
+        Rd = ((R1x-R2x)**2 + (R1y-R2y)**2 + (R1z-R2z)**2)**0.5
+        Rz = (R1z-R2z)
+        θ[i] = np.arccos(Rd/Rz) 
+    fob = open(filename,"a")
+    txt = "\t".join(θ.astype(str)) + "\n"
+    fob.write(txt)
+    fob.close()
+
 def run(param):
 
-    open(param.filename,"w+").close()
+    os.system(f"rm -rf {param.filename}*")
 
     # Equilibriation
     datEql =  Bunch(param = param)
@@ -215,6 +232,7 @@ def run(param):
 
             #writeXYZ(datEql)
             writeSQ(datEql)
+            writeθ(datEql)
 
     """
     dat = Bunch(param = param)
