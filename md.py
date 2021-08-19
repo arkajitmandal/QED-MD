@@ -8,14 +8,14 @@ class parameters():
     η      =   0.0
     ωc     =   0.10/27.2114
     Ω      =   0.14/27.2114
-    R0     =   3.0 
-    M      =   1
+    R0     =   2.7
+    M      =   25
     ndof   =   6*M+1
     T = 298.0
     β = 315774/T  
     # Langevin Parameters
     λ = np.zeros((6*M+1))
-    λ[:-1] = 0.0/27.2114
+    λ[:-1] = 0.05/27.2114
     # masses
     m        =   np.zeros((6*M+1))
     m[::2]   =   1836.0 # atom 1
@@ -141,7 +141,7 @@ def init(dat):
     # Initialize in Rd 
     for i in range(M):
         σR = (1/ (β * m * Ω**2.0) ) ** 0.5
-        Rd = 1.9 #gran(3.0, σR) #2.7023081637
+        Rd = gran(dat.param.R0, σR) #2.7023081637
         # θ  = np.random.random() * np.pi 
         # ϕ  = np.random.random() * 2.0 * np.pi 
         R[6*i+2] = -Rd/2
@@ -173,6 +173,31 @@ def writeR(dat):
     fob.write(txt)
     fob.close()
 
+def writeSQ(dat):
+    filename = dat.param.filename
+    M = dat.param.M
+    R = dat.R[:-1] * 1# np.reshape(dat.R[:-1],(M,3))
+    atom1 = "C"
+    atom2 = "O"
+    txt   = f"{M*2}\n\n"
+    sq = int((dat.param.M)**0.5)
+    _ = 7
+    for i in range(M): 
+
+        com = 0.5 * (R[6*i:6*i+3] + (R[6*i+3:6*i+6])) 
+        R1 = R[6*i  :6*i+3] - com
+        R2 = R[6*i+3:6*i+6] - com
+
+        R1[0] += (i%sq) * _
+        R1[2] += int(i/sq) * _
+        R2[0] += (i%sq) * _
+        R2[2] += int(i/sq) * _
+
+        txt +=  f"{atom1}\t" + "\t".join(R1.astype(str)) + "\n"
+        txt +=  f"{atom2}\t" + "\t".join(R2.astype(str)) + "\n"
+    fob = open(filename,"a")
+    fob.write(txt)
+    fob.close()
 
 def run(param):
 
@@ -185,11 +210,11 @@ def run(param):
     # Init force
     datEql.f1 = -dV(datEql)
     for t in range(datEql.param.eSteps):
-        datEql = vv(datEql)
+        datEql = vvl(datEql)
         if (t%datEql.param.nskip==0):
 
             #writeXYZ(datEql)
-            writeR(datEql)
+            writeSQ(datEql)
 
     """
     dat = Bunch(param = param)
