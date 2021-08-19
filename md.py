@@ -4,12 +4,12 @@ import os
 class parameters():
     eSteps =   10000 # equilibriation steps
     nSteps =   200 # int(2*10**6)
-    dtN    =   1.0
+    dtN    =   10.0
     η      =   0.0
     ωc     =   0.10/27.2114
     Ω      =   0.14/27.2114
     R0     =   2.7
-    M      =   25
+    M      =   36
     ndof   =   6*M+1
     T = 298.0
     β = 315774/T  
@@ -210,7 +210,7 @@ def writeθ(dat):
         # Bond-Length
         Rd = ((R1x-R2x)**2 + (R1y-R2y)**2 + (R1z-R2z)**2)**0.5
         Rz = (R1z-R2z)
-        θ[i] = np.arccos(Rd/Rz) 
+        θ[i] = np.arccos(Rz/Rd) 
     fob = open(filename,"a")
     txt = "\t".join(θ.astype(str)) + "\n"
     fob.write(txt)
@@ -231,7 +231,7 @@ def run(param):
         if (t%datEql.param.nskip==0):
 
             #writeXYZ(datEql)
-            writeSQ(datEql)
+            #writeSQ(datEql)
             writeθ(datEql)
 
     """
