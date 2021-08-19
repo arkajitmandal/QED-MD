@@ -103,16 +103,16 @@ def dV(dat):
         # Harmonic Potential on atom 1
         dr = m * (Ω**2) * (Rd[i]-R0) * (-1/Rd[i])  
         
-        dE[6*i]        =  dr * (R1x-R2x) # X
-        dE[6*i + 1]    =  dr * (R1y-R2y) # Y
-        dE[6*i + 2]    =  dr * (R1z-R2z) # Z
+        dE[6*i]        =  dr * np.abs(R1x-R2x) * (((R1x-R2x) < 0)-0.5)*2 # X
+        dE[6*i + 1]    =  dr * np.abs(R1y-R2y) * (((R1y-R2y) < 0)-0.5)*2 # Y
+        dE[6*i + 2]    =  dr * np.abs(R1z-R2z) * (((R1z-R2z) < 0)-0.5)*2 # Z
         # Cavity Effect on atom 1
         dE[6*i + 2]    += (ωc**2.0) * (R[-1] + χ * (2/ωc**3.0)**0.5 * np.sum(μ))  \
                         * χ * (2/ωc**3.0)**0.5 * μ0
         # Harmonic Potential on atom 2
-        dE[6*i + 3]    = - dr * (R1x-R2x) # X
-        dE[6*i + 4]    = - dr * (R1y-R2y) # Y
-        dE[6*i + 5]    = - dr * (R1z-R2z) # Z
+        dE[6*i + 3]    = - dr * np.abs(R1x-R2x) * (((R1x-R2x) < 0)-0.5)*2 # X
+        dE[6*i + 4]    = - dr * np.abs(R1y-R2y) * (((R1y-R2y) < 0)-0.5)*2 # Y
+        dE[6*i + 5]    = - dr * np.abs(R1z-R2z) * (((R1z-R2z) < 0)-0.5)*2 # Z
         # Cavity Effect on atom 2 
         dE[6*i + 5]    -= (ωc**2.0) * (R[-1] + χ * (2/ωc**3.0)**0.5 * np.sum(μ)) \
                         * χ * (2/ωc**3.0)**0.5 * μ0
@@ -144,8 +144,8 @@ def init(dat):
         Rd = 1.9 #gran(3.0, σR) #2.7023081637
         # θ  = np.random.random() * np.pi 
         # ϕ  = np.random.random() * 2.0 * np.pi 
-        R[6*i+2] = +Rd/2
-        R[6*i+5] = -Rd/2
+        R[6*i+2] = -Rd/2
+        R[6*i+5] = +Rd/2
     dat.R = R
     dat.P = P
     return dat
